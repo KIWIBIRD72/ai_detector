@@ -12,8 +12,8 @@ train_data = dataset["train"].shuffle(seed=42)
 split_ratio = 0.8
 split_index = int(len(train_data) * split_ratio)
 
-train_subset = train_data.select(range(int(split_index * 0.1)))
-test_subset = train_data.select(range(int(len(train_data) * 0.1)))
+train_subset = train_data.select(range(split_index))
+test_subset = train_data.select(range(split_index, len(train_data)))
 
 
 def prepare_dataset(data):

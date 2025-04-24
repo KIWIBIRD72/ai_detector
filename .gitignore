@@ -1,3 +1,4 @@
 .idea
 __pycache__
 app/services/results/*
+app/services/model
