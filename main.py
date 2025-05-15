@@ -60,9 +60,10 @@ async def check_text(file: UploadFile = File(...)):
 def get_clusters(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=300),
-    method: str = Query("kmeans", enum=["kmeans", "fuzzy"])
+    method: str = Query("kmeans", enum=["kmeans", "fuzzy"]),
+    n_cluster: int = Query(2, ge=1)
 ):
-    data, accuracy = get_cluster_data_cached(method)
+    data, accuracy = get_cluster_data_cached(method, n_cluster)
 
     total = len(data)
     start = (page - 1) * page_size

@@ -34,7 +34,7 @@ def cluster_texts(texts, true_labels=None, n_clusters=2, method="kmeans"):
     elif method == "fuzzy":
         X_dense = X.toarray().T
         cntr, u, _, _, _, _, _ = fuzz.cluster.cmeans(
-            X_dense, c=n_clusters, m=2, error=0.005, maxiter=1000, init=None, seed=42
+            X_dense, c=5, m=2, error=0.005, maxiter=1000, init=None, seed=42
         )
         predicted = np.argmax(u, axis=0)
     else:
@@ -58,8 +58,8 @@ def cluster_texts(texts, true_labels=None, n_clusters=2, method="kmeans"):
     return df, accuracy
 
 
-def get_cluster_data_cached(method="kmeans"):
-    cache_file = os.path.join(CACHE_DIR, f"clusters_{method}.json")
+def get_cluster_data_cached(method="kmeans", n_cluster=2):
+    cache_file = os.path.join(CACHE_DIR, f"clusters_{method}_{n_cluster}.json")
 
     # Если файл существует — читаем и возвращаем
     if os.path.exists(cache_file):
