@@ -1,9 +1,13 @@
 import torch
 from fastapi import FastAPI, UploadFile, File
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
-from app.services.clustering_service import cluster_texts, get_cluster_data_cached
+from app.services.clustering_service import get_cluster_data_cached
 from fastapi import Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from starlette.responses import FileResponse
+import os
+from app.services.ner.nltk_ner_service import NltkNer
 
 
 # Функция предсказания
@@ -17,7 +21,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -29,9 +33,20 @@ tokenizer = AutoTokenizer.from_pretrained(model_path)
 model = AutoModelForSequenceClassification.from_pretrained(model_path)
 model.eval()
 
-@app.get("/")
-def read_root():
-    return {"message": "Hello from FastApi service"}
+DASHBOARD_STATIC_PATH = '/Users/evgenijtrubnikov/Developer/PyCharm/naturale_or_artificial_text/frontend/dist'
+app.mount("/dashboard", StaticFiles(directory=DASHBOARD_STATIC_PATH, html=True), name="dashboard")
+
+@app.get('/ner-entities')
+async def get_entities(text: str):
+    nltk_ner = NltkNer()
+    nltk_named_entities = nltk_ner.get_named_entities(text)
+    return nltk_named_entities
+
+# Для поддержки SPA роутинга
+@app.get("/dashboard/{full_path:path}")
+async def serve_spa(full_path: str):
+    file_path = os.path.join(DASHBOARD_STATIC_PATH, "index.html")
+    return FileResponse(file_path)
 
 @app.post("/detector/check")
 async def check_text(file: UploadFile = File(...)):
@@ -44,14 +59,14 @@ async def check_text(file: UploadFile = File(...)):
 @app.get("/clusters")
 def get_clusters(
     page: int = Query(1, ge=1),
-    page_size: int = Query(20, ge=1, le=100)
+    page_size: int = Query(20, ge=1, le=300),
+    method: str = Query("kmeans", enum=["kmeans", "fuzzy"])
 ):
-    data, accuracy = get_cluster_data_cached()
+    data, accuracy = get_cluster_data_cached(method)
 
     total = len(data)
     start = (page - 1) * page_size
     end = start + page_size
-
     paginated_data = data[start:end]
 
     return {
@@ -63,6 +78,6 @@ def get_clusters(
     }
 
 @app.get("/clusters/stats")
-def get_stats():
-    _, accuracy = get_cluster_data_cached()
+def get_stats(method: str = Query("kmeans", enum=["kmeans", "fuzzy"])):
+    _, accuracy = get_cluster_data_cached(method)
     return {"accuracy": accuracy}
