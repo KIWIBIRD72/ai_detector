@@ -3,5 +3,4 @@ __pycache__
 app/services/results/*
 app/services/detector/model
 venv/
-cluster_cache/*
 .cursor

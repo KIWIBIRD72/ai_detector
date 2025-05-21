@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import clustering, dashboard, detector
+from app.routers import clustering, detector
 
 app = FastAPI()
 
@@ -13,5 +13,4 @@ app.add_middleware(
 )
 
 app.include_router(clustering.router)
-app.include_router(dashboard.router)
 app.include_router(detector.router)
