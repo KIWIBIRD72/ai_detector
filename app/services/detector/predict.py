@@ -1,9 +1,17 @@
 import torch
 import os
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from .train_service import train_model
 
 # Загрузка модели
 model_path = os.path.abspath("./app/services/detector/model")
+
+# Проверка наличия модели и её создание при необходимости
+if not os.path.exists(model_path) or not os.listdir(model_path):
+    print("Model not found. Training new model...")
+    train_model()
+    print("Model training completed.")
+
 tokenizer = AutoTokenizer.from_pretrained(model_path)
 model = AutoModelForSequenceClassification.from_pretrained(model_path)
 model.eval()
