@@ -9,3 +9,4 @@ datasets==2.14.5
 python-multipart==0.0.20
 tqdm==4.67.1
 scikit-fuzzy==0.4.2
+accelerate>=0.26.0
