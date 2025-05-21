@@ -49,7 +49,7 @@ test_dataset = test_dataset.map(preprocess, batched=True)
 model = AutoModelForSequenceClassification.from_pretrained("roberta-base", num_labels=2)
 
 training_args = TrainingArguments(
-    output_dir="./results",
+    output_dir="../results",
     eval_strategy="epoch",
     per_device_train_batch_size=8,
     gradient_accumulation_steps=2,

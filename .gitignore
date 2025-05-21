@@ -1,6 +1,7 @@
 .idea
 __pycache__
 app/services/results/*
-app/services/model
+app/services/detector/model
 venv/
 cluster_cache/*
+.cursor
